@@ -59,7 +59,7 @@ const SignUp = () => {
         );
         if (response.data.token) {
           toast.success("Registered User");
-          router("/login");
+          router("/home");
 
           setFormData({ name: "", email: "", password: "" });
           setErrors({});
@@ -138,7 +138,7 @@ const SignUp = () => {
           <h1 className="text-sm text-muted-foreground text-center">
             Already a user ?{" "}
             <span
-              onClick={() => router("/home")}
+              onClick={() => router("/login")}
               className="cursor-pointer text-[#DE8816] underline"
             >
               Login
