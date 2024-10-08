@@ -34,7 +34,14 @@ const appRouter = createBrowserRouter([
           </Suspense>
         ),
       },
-      
+      {
+        path: "/SignUp",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <SignUp />
+          </Suspense>
+        ),
+      },
       {
         path: "/login",
         element: (
