@@ -49,7 +49,7 @@ const Login = () => {
       setErrors(validationErrors);
     } else {
       try {
-        const response = await axios.post("http://localhost:3000/login", formData);
+        const response = await axios.post("https://cake-shop-backend-44w4.onrender.com/login", formData);
         console.log(response.data); // Log the response to check its structure
         if (response.data.token) {
           localStorage.setItem('token', response.data.token); 
