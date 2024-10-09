@@ -13,7 +13,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/cart-items`, {
+        const response = await axios.get(`https://cake-shop-backend-44w4.onrender.com/cart-items`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCartItems(response.data.data);
