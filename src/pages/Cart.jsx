@@ -30,7 +30,7 @@ const Cart = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/cart-item`, {
+      await axios.delete(`https://cake-shop-backend-44w4.onrender.com/cart-item`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { id } // Send the ID in the request body
       });
