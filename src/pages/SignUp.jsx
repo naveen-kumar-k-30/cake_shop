@@ -54,7 +54,7 @@ const SignUp = () => {
     } else {
       try {
         const response = await axios.post(
-          "http://localhost:3000/signup",
+          "https://cake-shop-backend-44w4.onrender.com/signup",
           formData
         );
         if (response.data.token) {
