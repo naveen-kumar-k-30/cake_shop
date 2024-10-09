@@ -19,6 +19,7 @@ const Card = () => {
       } catch (error) {
         console.error("Error in fetching cards", error);
         setLoading(false); // Set loading to false even if there’s an error
+        // test
       }
     };
     fetchCards();
