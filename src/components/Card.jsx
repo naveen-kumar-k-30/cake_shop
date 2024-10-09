@@ -12,7 +12,7 @@ const Card = () => {
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/cards");
+        const response = await axios.get("https://cake-shop-backend-44w4.onrender.com/cards");
         const data = response.data;
         setCards(data.data);
         setLoading(false); // Set loading to false after data is fetched
