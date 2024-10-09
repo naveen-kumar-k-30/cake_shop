@@ -20,7 +20,7 @@ const Details = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/user', {
+        const response = await axios.get('https://cake-shop-backend-44w4.onrender.com/user', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -40,7 +40,7 @@ const Details = () => {
   useEffect(() => {
     const fetchCard = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/cards/${id}`);
+        const response = await axios.get(`https://cake-shop-backend-44w4.onrender.com/cards/${id}`);
         const data = response.data.data;
         setCard(data);
         setLoading(false); // Set loading to false after data is fetched
