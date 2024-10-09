@@ -59,7 +59,7 @@ const SignUp = () => {
         );
         if (response.data.token) {
           toast.success("Registered User");
-          router("/login");
+          router("/home");
 
           setFormData({ name: "", email: "", password: "" });
           setErrors({});

@@ -13,6 +13,7 @@ import Homepage from "./pages/Homepage.jsx";
 import Details from "./components/Details.jsx";
 import Reviews from "./components/Reviews.jsx";
 import App from "./App.jsx";
+import AdminForm from "./pages/AdminForm.jsx";
 const appRouter = createBrowserRouter([
   {
     path: "/",
@@ -22,7 +23,7 @@ const appRouter = createBrowserRouter([
         path: "/",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
-            <SignUp/>
+            <Homepage/>
           </Suspense>
         ),
       },
@@ -34,7 +35,23 @@ const appRouter = createBrowserRouter([
           </Suspense>
         ),
       },
+      {
+        path: "/admin",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <AdminForm/>
+          </Suspense>
+        ),
+      },
       
+      {
+        path: "/SignUp",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <SignUp />
+          </Suspense>
+        ),
+      },
       {
         path: "/login",
         element: (

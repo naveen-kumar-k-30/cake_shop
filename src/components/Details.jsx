@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Filter, ReceiptIndianRupee, Minus, Plus, ShoppingCart, MessageSquareDiff } from "lucide-react";
+import { Filter, ReceiptIndianRupee, ShoppingCart, MessageSquareDiff, ArrowBigUpDash, ArrowBigDown } from "lucide-react";
 import toast from "react-hot-toast";
 import Loader from "./Loader";
 const Details = () => {
@@ -183,23 +183,29 @@ const Details = () => {
               <p className="playfair-display text-center mt-1">{item.rate}</p>
             </div>
             <div className="flex items-center gap-2 mt-2">
-              <button onClick={() => updateQuantity(item, -1)} className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600">
-                <Minus className="w-4 h-4" />
+              <button onClick={() => updateQuantity(item, -1)} className="bg-[#DE8816] text-white py-1 px-3 rounded-lg hover:bg-orange-500 ">
+              <ArrowBigDown className="w-4 h-4" />
+             
+                
               </button>
-              <p className="playfair-display text-center mt-1">{cart.find(cartItem => cartItem.id === item.id)?.quantity || 0}</p>
-              <button onClick={() => updateQuantity(item, 1)} className="bg-green-500 text-white py-1 px-3 rounded-lg hover:bg-green-600">
-                <Plus className="w-4 h-4" />
+              <p className="playfair-display text-center text-xl  mt-1">{cart.find(cartItem => cartItem.id === item.id)?.quantity || 0}</p>
+              <button onClick={() => updateQuantity(item, 1)} className="bg-[#DE8816] text-white py-1 px-3 rounded-lg hover:bg-orange-500">
+              <ArrowBigUpDash className="w-4 h-4"/>
               </button>
             </div>
-            <button onClick={() => handleAddToCart(item)} className="mt-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 flex items-center gap-2">
+            <div className="grid grid-cols-2 gap-2">
+              <div><button onClick={() => handleAddToCart(item)} className="mt-2 bg-[#FFD0D0] text-black py-2 px-4 rounded-lg hover:bg-red-400 flex items-center gap-2">
               <ShoppingCart className="w-5 h-5" />
-              Add to Cart
-            </button>
-            <button onClick={() => handleAddReview()} className="mt-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 flex items-center gap-2">
+              Cart
+            </button></div>
+              <div><button onClick={() => handleAddReview()} className="mt-2 bg-[#FFD0D0] text-black py-2 px-4 rounded-lg hover:bg-red-400 flex items-center gap-2">
               
               <MessageSquareDiff className="w-5 h-5"/>
-              Add review
-            </button>
+              Review
+            </button></div>
+            </div>
+            
+            
           </div>
         ))}
       </div>

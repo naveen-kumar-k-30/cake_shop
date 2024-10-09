@@ -54,7 +54,7 @@ const Login = () => {
         if (response.data.token) {
           localStorage.setItem('token', response.data.token); 
           toast.success("Login successful");
-          router("/");
+          router("/home");
           setFormData({ email: "", password: "" });
           setErrors({});
         }
