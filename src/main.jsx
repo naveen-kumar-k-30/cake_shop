@@ -1,19 +1,24 @@
-
 import ReactDOM from "react-dom/client";
-import './index.css'
-import { Toaster } from 'react-hot-toast';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Login from "./pages/Login.jsx"
-import SignUp from "./pages/SignUp.jsx"
-import Cart from "./pages/Cart.jsx"
-import About from './pages/About.jsx';
-import Error from './pages/Error.jsx';
+import '../src/assets/css/google-places.css';
+import "./index.css";
+import { Toaster } from "react-hot-toast";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import SignUp from "./pages/SignUp.jsx";
+import Cart from "./pages/Cart.jsx";
+import About from "./pages/About.jsx";
+import Error from "./pages/Error.jsx";
 import { Suspense } from "react";
 import Homepage from "./pages/Homepage.jsx";
 import Details from "./components/Details.jsx";
 import Reviews from "./components/Reviews.jsx";
 import App from "./App.jsx";
 import AdminForm from "./pages/AdminForm.jsx";
+import Logout from "./pages/Logout.jsx";
+import ProtectedRoute from "./Auth/ProtectedRoute.jsx";
+import Orders from "./components/Orders.jsx";
+import Contact from "./components/Contact.jsx";
+import GoogleReviews from "./components/GoogleReviews.jsx";
 const appRouter = createBrowserRouter([
   {
     path: "/",
@@ -23,7 +28,7 @@ const appRouter = createBrowserRouter([
         path: "/",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
-            <Homepage/>
+            <Homepage />
           </Suspense>
         ),
       },
@@ -31,7 +36,7 @@ const appRouter = createBrowserRouter([
         path: "/home",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
-            <Homepage/>
+            <Homepage />
           </Suspense>
         ),
       },
@@ -39,11 +44,11 @@ const appRouter = createBrowserRouter([
         path: "/admin",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
-            <AdminForm/>
+            <AdminForm />
           </Suspense>
         ),
       },
-      
+
       {
         path: "/SignUp",
         element: (
@@ -61,11 +66,42 @@ const appRouter = createBrowserRouter([
         ),
       },
       {
-        
+        path: "/logout",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Logout />
+          </Suspense>
+        ),
+      },
+      {
         path: "/cart",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
-            <Cart />
+            <ProtectedRoute><Cart/></ProtectedRoute>
+          </Suspense>
+        ),
+      },
+      {
+        path: "/contact",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <ProtectedRoute><Contact/></ProtectedRoute>
+          </Suspense>
+        ),
+      },
+      {
+        path: "/googleReview",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <GoogleReviews />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/orders",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <ProtectedRoute><Orders/></ProtectedRoute>
           </Suspense>
         ),
       },
@@ -99,4 +135,9 @@ const appRouter = createBrowserRouter([
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<><Toaster position="top-center" /><RouterProvider router={appRouter} /></> );
+root.render(
+  <>
+    <Toaster position="top-center" />
+    <RouterProvider router={appRouter} />
+  </>
+);

@@ -1,6 +1,19 @@
-import { SquareMenu, HandHeart, Search, ShoppingBag } from "lucide-react"; 
+import { Search } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import {
+  PiSealQuestionFill,
+  PiSignInDuotone,
+  PiSignOutDuotone,
+} from "react-icons/pi";
+import { IoIosHome } from "react-icons/io";
+import { FaGrinStars, FaShoppingCart } from "react-icons/fa";
+import { LuCakeSlice } from "react-icons/lu";
+import { CgProfile } from "react-icons/cg";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { MdOutlineRemoveCircle } from "react-icons/md";
 
 const dummyData = [
   { title: "Anniversary gifts" },
@@ -21,15 +34,14 @@ function Header() {
   const [data, setData] = useState(dummyData);
   const [filterData, setFilterData] = useState(dummyData);
   const [searchdata, setSearchData] = useState("");
-
-  const toggle = () => {
-    setShow(!show);
-  };
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState(
+    localStorage.getItem("userEmail") || ""
+  ); // State for storing user email
+  const [loading, setLoading] = useState(true);
+  const toggle = () => setShow(!show);
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const [hoveredItem, setHoveredItem] = useState(null);
   const handleSearch = () => {
     const searchedText = data.filter(
       (e) => e.title.toString().toLowerCase() === searchdata
@@ -37,17 +49,67 @@ function Header() {
     setFilterData(searchedText);
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token"); // Retrieve token from localStorage
+      if (token) {
+        try {
+          const response = await axios.get(`https://cake-shop-backend-1.onrender.com/user`, {
+            headers: { Authorization: `Bearer ${token}` }, // Use token for authorization
+          });
+          setUserName(response.data.user.userName); // Adjust based on your response structure
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          toast.error("Failed to load user data. Please try again.");
+          setUserName(""); // Reset username if fetch fails
+        } finally {
+          setLoading(false); // Set loading to false after fetching data
+        }
+      } else {
+        setUserName(""); // Reset username if no token
+        setLoading(false); // Ensure loading is stopped when there’s no token
+      }
+    };
+
+    fetchUserData();
+  }, [userEmail]);
+
+  // Update userEmail state on changes to localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newUserEmail = localStorage.getItem("userEmail") || "";
+      const newUserName = localStorage.getItem("userName") || "";
+      setUserEmail(newUserEmail);
+      setUserName(newUserName);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+  if (loading) {
+    return <div>Loading user data...</div>;
+  }
+
   return (
-    <header >
+    <header>
       <div className="2xl:container mx-auto bg-[#FFD0D0]">
-        <div className="w-[90%] mx-auto grid grid-cols-2 lg:grid-cols-3 items-center py-4 border-b">
-          <div className="flex items-center">
-            <p className="text-3xl great-vibes font-bold text-[#DE8816]">
+        <div className="w-[90%] mx-auto grid grid-cols-2 lg:grid-cols-3 items-center justify-center py-4 border-b gap-4">
+          <div className="flex items-center space-x-4">
+            {/* Logo Image */}
+            <img
+              src="https://ik.imagekit.io/a2gpaui9b/cake%20shop/logo2.jpeg?updatedAt=1729010333451"
+              alt="logo"
+              className="w-10 lg:w-16 rounded-full"
+            />
+            {/* Text that only appears on large screens */}
+            <p className="text-2xl lg:text-3xl great-vibes font-bold text-[#DE8816] hidden md:block lg:block ">
               The Milady&apos;s Pastries
             </p>
           </div>
 
-          {/* Search Bar */}
           <div className="relative col-span-2 lg:col-span-1 order-3 lg:order-2">
             <div className="bg-white border rounded-full p-1 flex items-center">
               <input
@@ -91,69 +153,166 @@ function Header() {
           </div>
 
           {/* Menu and Hamburger Icon */}
-          <div className="order-2 lg:order-3 flex justify-end">
+          <div className="order-2 lg:order-3 flex justify-end ">
             {/* Hamburger Icon */}
-            <button
-              onClick={toggleMenu}
-              className="lg:hidden  ml-5 focus:outline-none text-white "
-            >
-              <SquareMenu />
-            </button>
+            {menuOpen ? (
+              <button
+                onClick={toggleMenu}
+                className="lg:hidden ml-5 focus:outline-none text-red-500"
+              >
+                <MdOutlineRemoveCircle className="w-6 h-6"/>
+              </button>
+            ) : (
+              <button
+                onClick={toggleMenu}
+                className="lg:hidden ml-5 focus:outline-none text-white"
+              >
+                <GiHamburgerMenu  className="w-6 h-6"/>
+              </button>
+            )}
 
             {/* Navigation Links */}
             <ul
               className={`${
                 menuOpen ? "block" : "hidden"
-              } lg:flex lg:space-x-4 space-y-4 lg:space-y-0 absolute lg:relative z-50 lg:flex-row flex flex-col lg:items-center bg-white lg:bg-transparent p-4 lg:p-0 rounded-lg shadow-lg lg:shadow-none mt-8 lg:mt-0`}
+              } lg:flex lg:space-x-4 space-y-4 lg:space-y-0 absolute lg:relative z-50 lg:flex-row flex flex-col lg:items-center bg-white lg:bg-transparent p-4 lg:p-0 rounded-lg shadow-lg lg:shadow-none mt-8 lg:mt-0 w-[90%] mx-auto`}
             >
               <li>
                 <Link to="/home">
-                  <button className="flex items-center text-gray-700 ">
-                    Home
+                  <button
+                    onClick={toggleMenu}
+                    onMouseEnter={() => setHoveredItem("home")}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700"
+                  >
+                    {hoveredItem === "home" && (
+                      <IoIosHome className="w-5 h-5" />
+                    )}
+                    <span>Home</span>
                   </button>
                 </Link>
               </li>
               <li>
-                <Link to="/SignUp">
-                  <button className="flex items-center text-gray-700">
-                    SignUp
-                  </button>
-                </Link>
-              </li>
-              <li>
-                <Link to="/login">
-                  <button className="flex items-center text-gray-700">
-                    Login
-                  </button>
-                </Link>
-              </li>
-              <li>
-                <Link to="/About">
-                  <button className="flex items-center text-gray-700">
-                    About
+                <Link to="/about">
+                  <button
+                    onClick={toggleMenu}
+                    onMouseEnter={() => setHoveredItem("about")}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700"
+                  >
+                    {hoveredItem === "about" && (
+                      <PiSealQuestionFill className="w-5 h-5" />
+                    )}
+                    <span>About</span>
                   </button>
                 </Link>
               </li>
               <li>
                 <Link to="/review">
-                  <button className="flex items-center text-gray-700">
-                    Reviews
+                  <button
+                    onClick={toggleMenu}
+                    onMouseEnter={() => setHoveredItem("review")}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700"
+                  >
+                    {hoveredItem === "review" && (
+                      <FaGrinStars className="w-5 h-5" />
+                    )}
+                    <span>Reviews</span>
                   </button>
                 </Link>
               </li>
               <li>
-                <Link>
-                  <HandHeart className="text-gray-700" />
+                <Link to="/orders">
+                  <button
+                    onClick={toggleMenu}
+                    onMouseEnter={() => setHoveredItem("orders")}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700"
+                  >
+                    {hoveredItem === "orders" && (
+                      <LuCakeSlice className="w-5 h-5" />
+                    )}
+                    <span>Orders</span>
+                  </button>
                 </Link>
               </li>
               <li>
                 <Link to="/cart">
-                  <ShoppingBag className="text-gray-700" />
+                  <button
+                    onClick={toggleMenu}
+                    onMouseEnter={() => setHoveredItem("cart")}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700"
+                  >
+                    {hoveredItem === "cart" && (
+                      <FaShoppingCart className="w-5 h-5" />
+                    )}
+                    <span>Cart</span>
+                  </button>
                 </Link>
               </li>
+              {userEmail ? (
+                <>
+                  <li>
+                    <Link to="/logout">
+                      <button
+                        onClick={toggleMenu}
+                        onMouseEnter={() => setHoveredItem("logout")}
+                        onMouseLeave={() => setHoveredItem(null)}
+                        className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700"
+                      >
+                        {hoveredItem === "logout" && (
+                          <PiSignOutDuotone className="w-5 h-5" />
+                        )}
+                        <span>Logout</span>
+                      </button>
+                    </Link>
+                  </li>
+                  <li>
+                    <span className="ml-2 w-8 h-8 bg-[#DE8816] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                      {userName.charAt(0).toUpperCase()}
+                    </span>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link to="/signup">
+                      <button
+                        onClick={toggleMenu}
+                        onMouseEnter={() => setHoveredItem("Signup")}
+                        onMouseLeave={() => setHoveredItem(null)}
+                        className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700"
+                      >
+                        {hoveredItem === "Signup" && (
+                          <CgProfile className="w-5 h-5" />
+                        )}
+                        <span>Signup</span>
+                      </button>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/login">
+                      <button
+                        onClick={toggleMenu}
+                        onMouseEnter={() => setHoveredItem("Login")}
+                        onMouseLeave={() => setHoveredItem(null)}
+                        className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700"
+                      >
+                        {hoveredItem === "Login" && (
+                          <PiSignInDuotone className="w-5 h-5" />
+                        )}
+                        <span>Login</span>
+                      </button>
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>
+        <div></div>
       </div>
     </header>
   );

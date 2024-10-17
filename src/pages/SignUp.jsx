@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect } from 'react';
+// import { backendURL } from "../utils/urls";
 const SignUp = () => {
   useEffect(() => {
     AOS.init({
@@ -48,29 +49,23 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
-
+  
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
       try {
-        const response = await axios.post(
-          "http://localhost:3000/signup",
-          formData
-        );
+        const response = await axios.post("https://cake-shop-backend-1.onrender.com/signup", formData);
         if (response.data.token) {
-          toast.success("Registered User");
-          router("/home");
-
+          localStorage.setItem("token", response.data.token); // Store token
+          toast.success("Registered and Logged In Successfully");
+          router("/home", { replace: true });         
+          window.location.reload();
           setFormData({ name: "", email: "", password: "" });
           setErrors({});
         }
       } catch (error) {
         console.error("Error during sign up:", error);
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error
-        ) {
+        if (error.response && error.response.data && error.response.data.error) {
           setErrors({ general: error.response.data.error });
         } else {
           setErrors({ general: "Sign up failed. Please try again later." });
@@ -78,6 +73,7 @@ const SignUp = () => {
       }
     }
   };
+  
 
   return (
     <div className="w-[90%] mx-auto max-w-md mt-10 bg-white p-6 rounded-lg shadow-lg" data-aos="flip-right">
@@ -130,8 +126,8 @@ const SignUp = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-[#FFD0D0] text-black py-2 rounded-lg hover:bg-[#DE8816] transition-colors"
-          >
+            className="w-full bg-gradient-to-r from-[#DE8816] to-orange-600 text-white font-bold py-3 px-4 rounded-lg hover:from-orange-400 hover:to-orange-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
             Sign Up
           </button>
 

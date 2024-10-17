@@ -3,8 +3,7 @@ import axios from "axios";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ReceiptIndianRupee,Trash2 } from "lucide-react";
 import toast from 'react-hot-toast';
-import PaymentButton from "../components/PaymentButton";
-import {loadStripe} from '@stripe/stripe-js';
+// const{ RAZORPAY_ID_KEY,RAZORPAY_SECRET_KEY} from process.env;
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +12,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/cart-items`, {
+        const response = await axios.get(`https://cake-shop-backend-1.onrender.com/cart-items`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCartItems(response.data.data);
@@ -30,7 +29,7 @@ const Cart = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/cart-item`, {
+      await axios.delete(`https://cake-shop-backend-1.onrender.com/cart-item`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { id } // Send the ID in the request body
       });
@@ -44,6 +43,55 @@ const Cart = () => {
 
   // Step 2: Calculate total amount
   const totalAmount = cartItems.reduce((acc, item) => acc + item.cardItem.rate * item.quantity, 0);
+
+  const handlePayment = async () => {
+    try {
+      // Step 1: Create an order on the server
+      const response = await fetch('https://cake-shop-backend-1.onrender.com/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: totalAmount * 100 }), // Amount in smallest currency unit
+      });
+
+      const orderData = await response.json();
+
+      // Step 2: Setup Razorpay options
+      const options = {
+        key: "", // Your Razorpay key ID
+        key_secret:"", // Your Razorpay key secret
+        amount: orderData.amount * 100, // Amount is in currency subunits
+        currency: "INR",
+        name: "Milady's pastries",
+        description: "Order Payment",
+        image: "https://ik.imagekit.io/os5tqthul/Cakes/Screenshot_2024-09-25_130807-removebg-preview.png?updatedAt=1727250073417",
+        order_id: orderData.id, // Order ID from the server
+        handler: (response) => {
+          // Step 3: Handle the payment response
+          alert(`Payment successful: ${response.razorpay_payment_id}`);
+        },
+        prefill: {
+          name: "Naveen kumar",
+          email: "naveenkarthikeyan3003@gmail.com",
+          contact: "8122701989",
+        },
+        notes: {
+          address: "no-11 3rd street,Abirami nagar,nerkundram ,chennai -600107",
+        },
+        theme: {
+          color: "#F37254",
+        },
+      };
+
+      // Step 4: Open Razorpay payment modal
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("An error occurred while processing the payment. Please try again.");
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
   if (cartItems.length === 0) return <p>Your cart is empty.</p>;
@@ -61,7 +109,6 @@ const Cart = () => {
               <p className="playfair-display text-center mt-1">{item.cardItem.rate}</p>
             </div>
             <p className="playfair-display text-center mt-2">Quantity: {item.quantity}</p>
-            <PaymentButton totalAmount={totalAmount} /> {/* Pass totalAmount here */}
             <button
               onClick={() => handleDelete(item.id)}
               className="absolute top-2 right-2 text-white p-2 rounded-full"
@@ -72,13 +119,10 @@ const Cart = () => {
         ))}
       </div>
       <div className="text-center">
-
         <h2 className="text-2xl mt-4">Total Amount: ₹{totalAmount}</h2>
-        <div className="text-black"
-          dangerouslySetInnerHTML={{
-            __html: `<form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_P6pnUcQ9F4DN2R" async></script></form>`
-          }}
-        />
+        <button onClick={handlePayment} className='bg-[#FFD0D0] hover:bg-red-400 px-3 py-1 rounded-lg mt-4'>
+          Pay Now
+        </button>
       </div>
     </div>
   );

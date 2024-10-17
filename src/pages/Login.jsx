@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect } from 'react';
+// import { backendURL } from "../utils/urls";
 const Login = () => {
   useEffect(() => {
     AOS.init({
@@ -49,12 +50,15 @@ const Login = () => {
       setErrors(validationErrors);
     } else {
       try {
-        const response = await axios.post("http://localhost:3000/login", formData);
+        
+        const response = await axios.post("https://cake-shop-backend-1.onrender.com/login", formData);
         console.log(response.data); // Log the response to check its structure
         if (response.data.token) {
           localStorage.setItem('token', response.data.token); 
+          localStorage.setItem('userEmail', formData.email); 
           toast.success("Login successful");
-          router("/home");
+          router("/home", { replace: true });          
+          window.location.reload();
           setFormData({ email: "", password: "" });
           setErrors({});
         }
@@ -108,8 +112,8 @@ const Login = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-[#FFD0D0] text-black py-2 rounded-lg hover:bg-[#DE8816] transition-colors"
-        >
+          className="w-full bg-gradient-to-r from-[#DE8816] to-orange-600 text-white font-bold py-3 px-4 rounded-lg hover:from-orange-400 hover:to-orange-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+          >
           Login
         </button>
         <h1 className="text-sm text-muted-foreground text-center">New user ? <span onClick={()=>router("/SignUp")} className="cursor-pointer text-[#DE8816] underline">Register</span></h1>

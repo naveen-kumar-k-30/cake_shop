@@ -1,7 +1,8 @@
 import Card from "../components/Card"
 import CarouselComponent from "../components/Carousel"
+import Contact from "../components/Contact"
+import GoogleReviews from "../components/GoogleReviews"
 import Hero from "../components/Hero"
-import MapLocation from "../components/Maplocation"
 
 const Homepage = () => {
   return (
@@ -10,7 +11,8 @@ const Homepage = () => {
     <CarouselComponent/>
     <Card/>
     <Hero/>
-    <MapLocation/>
+    <GoogleReviews/>
+    <Contact/>
     </>
   )
 }
