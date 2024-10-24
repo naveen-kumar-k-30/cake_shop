@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect } from 'react';
+import { backendURL } from "../utils/urls";
 // import { backendURL } from "../utils/urls";
 const SignUp = () => {
   useEffect(() => {
@@ -54,9 +55,10 @@ const SignUp = () => {
       setErrors(validationErrors);
     } else {
       try {
-        const response = await axios.post("https://cake-shop-backend-1.onrender.com/signup", formData);
+        const response = await axios.post(`${backendURL}/signup`, formData);
         if (response.data.token) {
           localStorage.setItem("token", response.data.token); // Store token
+          localStorage.setItem('userEmail', formData.email); 
           toast.success("Registered and Logged In Successfully");
           router("/home", { replace: true });         
           window.location.reload();

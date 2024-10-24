@@ -14,6 +14,7 @@ import { LuCakeSlice } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdOutlineRemoveCircle } from "react-icons/md";
+import { backendURL } from "../utils/urls";
 
 const dummyData = [
   { title: "Anniversary gifts" },
@@ -54,9 +55,12 @@ function Header() {
       const token = localStorage.getItem("token"); // Retrieve token from localStorage
       if (token) {
         try {
-          const response = await axios.get(`https://cake-shop-backend-1.onrender.com/user`, {
-            headers: { Authorization: `Bearer ${token}` }, // Use token for authorization
-          });
+          const response = await axios.get(
+            `${backendURL}/user`,
+            {
+              headers: { Authorization: `Bearer ${token}` }, // Use token for authorization
+            }
+          );
           setUserName(response.data.user.userName); // Adjust based on your response structure
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -160,14 +164,14 @@ function Header() {
                 onClick={toggleMenu}
                 className="lg:hidden ml-5 focus:outline-none text-red-500"
               >
-                <MdOutlineRemoveCircle className="w-6 h-6"/>
+                <MdOutlineRemoveCircle className="w-6 h-6" />
               </button>
             ) : (
               <button
                 onClick={toggleMenu}
                 className="lg:hidden ml-5 focus:outline-none text-white"
               >
-                <GiHamburgerMenu  className="w-6 h-6"/>
+                <GiHamburgerMenu className="w-6 h-6" />
               </button>
             )}
 
@@ -270,9 +274,23 @@ function Header() {
                     </Link>
                   </li>
                   <li>
-                    <span className="ml-2 w-8 h-8 bg-[#DE8816] text-white rounded-full flex items-center justify-center text-sm font-medium">
-                      {userName.charAt(0).toUpperCase()}
-                    </span>
+                    <button
+                      onMouseEnter={() => setHoveredItem("avatar")}
+                      onMouseLeave={() => setHoveredItem(null)}
+                      className="flex items-center space-x-2 transition-colors duration-300 hover:text-[#DE8816] text-gray-700 relative"
+                    >
+                     
+                      <span className="ml-2 w-8 h-8 bg-[#DE8816] text-white rounded-full flex items-center justify-center text-sm font-medium relative">
+                        {userName.charAt(0).toUpperCase()}
+                      </span>
+
+                      {/* Tooltip for Full Username */}
+                      {hoveredItem === "avatar" && (
+                        <div className="absolute -top-10 left-0 bg-gray-700 text-white text-xs rounded-md px-2 py-1 shadow-md mt-20">
+                          Welcome {userName}
+                        </div>
+                      )}
+                    </button>
                   </li>
                 </>
               ) : (

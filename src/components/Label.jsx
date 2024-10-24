@@ -11,7 +11,7 @@ const Label = () => {
   }, []);
   return (
     <div className="flex justify-center items-center h-full w-full "data-aos="zoom-in-up">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 border-2 border-[#DE8816] rounded-lg h-[75%] w-[75%] lg:w-[60%]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 border-2 border-[#DE8816] rounded-lg h-[75%] ">
         {/* Image is ordered below the text on smaller screens */}
         <img 
           src="https://ik.imagekit.io/a2gpaui9b/cake%20shop/cartoon.jpg?updatedAt=1728209115459" 

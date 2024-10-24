@@ -1,17 +1,18 @@
+import Cakes from "../components/Cakes"
 import Card from "../components/Card"
 import CarouselComponent from "../components/Carousel"
 import Contact from "../components/Contact"
-import GoogleReviews from "../components/GoogleReviews"
-import Hero from "../components/Hero"
-
+import Rating from "../components/Rating"
+import About from "./About"
 const Homepage = () => {
   return (
     <>
     
     <CarouselComponent/>
     <Card/>
-    <Hero/>
-    <GoogleReviews/>
+    <Cakes/>
+    <Rating/>
+    <About/>
     <Contact/>
     </>
   )

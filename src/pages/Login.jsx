@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect } from 'react';
+import { backendURL } from "../utils/urls";
 // import { backendURL } from "../utils/urls";
 const Login = () => {
   useEffect(() => {
@@ -51,7 +52,7 @@ const Login = () => {
     } else {
       try {
         
-        const response = await axios.post("https://cake-shop-backend-1.onrender.com/login", formData);
+        const response = await axios.post(`${backendURL}/login`, formData);
         console.log(response.data); // Log the response to check its structure
         if (response.data.token) {
           localStorage.setItem('token', response.data.token); 

@@ -1,18 +1,21 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { ReceiptIndianRupee,Trash2 } from "lucide-react";
+import { ReceiptIndianRupee, Trash2 } from "lucide-react";
 import toast from 'react-hot-toast';
-// const{ RAZORPAY_ID_KEY,RAZORPAY_SECRET_KEY} from process.env;
+import { backendURL } from "../utils/urls";
+import CheckoutForm from "../components/CheckoutForm";
+
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem('token');
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`https://cake-shop-backend-1.onrender.com/cart-items`, {
+        const response = await axios.get(`${backendURL}/cart-items`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCartItems(response.data.data);
@@ -28,69 +31,28 @@ const Cart = () => {
   }, [token]);
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to remove this item?");
+  if (!confirmDelete) return;
     try {
-      await axios.delete(`https://cake-shop-backend-1.onrender.com/cart-item`, {
+      await axios.delete(`${backendURL}/cart-item`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { id } // Send the ID in the request body
       });
       setCartItems(cartItems.filter(item => item.id !== id));
       toast.success("Item removed from cart successfully.");
     } catch (error) {
-      console.error("Error removing item from cart:", error);
-      toast.error("Failed to remove item from cart. Please try again.");
+      toast.error("Failed to remove item from cart. Please try again.",error);
     }
   };
 
-  // Step 2: Calculate total amount
   const totalAmount = cartItems.reduce((acc, item) => acc + item.cardItem.rate * item.quantity, 0);
 
-  const handlePayment = async () => {
-    try {
-      // Step 1: Create an order on the server
-      const response = await fetch('https://cake-shop-backend-1.onrender.com/create-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount: totalAmount * 100 }), // Amount in smallest currency unit
-      });
+  const handleOpenCheckout = () => {
+    setIsCheckoutOpen(true);
+  };
 
-      const orderData = await response.json();
-
-      // Step 2: Setup Razorpay options
-      const options = {
-        key: "", // Your Razorpay key ID
-        key_secret:"", // Your Razorpay key secret
-        amount: orderData.amount * 100, // Amount is in currency subunits
-        currency: "INR",
-        name: "Milady's pastries",
-        description: "Order Payment",
-        image: "https://ik.imagekit.io/os5tqthul/Cakes/Screenshot_2024-09-25_130807-removebg-preview.png?updatedAt=1727250073417",
-        order_id: orderData.id, // Order ID from the server
-        handler: (response) => {
-          // Step 3: Handle the payment response
-          alert(`Payment successful: ${response.razorpay_payment_id}`);
-        },
-        prefill: {
-          name: "Naveen kumar",
-          email: "naveenkarthikeyan3003@gmail.com",
-          contact: "8122701989",
-        },
-        notes: {
-          address: "no-11 3rd street,Abirami nagar,nerkundram ,chennai -600107",
-        },
-        theme: {
-          color: "#F37254",
-        },
-      };
-
-      // Step 4: Open Razorpay payment modal
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
-    } catch (error) {
-      console.error("Payment error:", error);
-      alert("An error occurred while processing the payment. Please try again.");
-    }
+  const handleCloseCheckout = () => {
+    setIsCheckoutOpen(false);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -113,17 +75,19 @@ const Cart = () => {
               onClick={() => handleDelete(item.id)}
               className="absolute top-2 right-2 text-white p-2 rounded-full"
             >
-             <Trash2 className="text-red-500" />
+              <Trash2 className="text-red-500" />
             </button>
           </div>
         ))}
       </div>
       <div className="text-center">
         <h2 className="text-2xl mt-4">Total Amount: ₹{totalAmount}</h2>
-        <button onClick={handlePayment} className='bg-[#FFD0D0] hover:bg-red-400 px-3 py-1 rounded-lg mt-4'>
-          Pay Now
+        <button onClick={handleOpenCheckout} className='bg-gradient-to-r from-[#FFD0D0] to-red-400 text-white font-bold py-3 px-4 rounded-full rounded-br-none hover:from-red-400  hover:to-red-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500  fixed bottom-[22%] right-[2%]'>
+          Checkout
         </button>
       </div>
+
+      <CheckoutForm isOpen={isCheckoutOpen} onClose={handleCloseCheckout} cartItems={cartItems} totalAmount={totalAmount}/>
     </div>
   );
 };

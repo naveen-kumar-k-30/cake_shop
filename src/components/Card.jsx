@@ -4,6 +4,7 @@ import axios from "axios";
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Loader from "./Loader"; // Make sure the path to Loader is correct
+import { backendURL } from "../utils/urls";
 
 const Card = () => {
   const [cards, setCards] = useState([]);
@@ -12,7 +13,7 @@ const Card = () => {
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const response = await axios.get("https://cake-shop-backend-1.onrender.com/cards");
+        const response = await axios.get(`${backendURL}/cards`);
         const data = response.data;
         setCards(data.data);
         setLoading(false); // Set loading to false after data is fetched
@@ -50,7 +51,7 @@ const Card = () => {
               }}
               className="block"
             >
-              <div className="bg-white flex flex-col justify-center items-center shadow-lg p-4 gap-2 rounded-lg">
+              <div className="bg-white flex flex-col justify-center items-center shadow-lg p-4 gap-2 rounded-lg hover:bg-slate-100 transition duration-300 transform hover:scale-105">
                 <LazyLoadImage
                   alt={card.title}
                   effect="opacity"

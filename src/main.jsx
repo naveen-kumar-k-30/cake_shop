@@ -11,14 +11,14 @@ import Error from "./pages/Error.jsx";
 import { Suspense } from "react";
 import Homepage from "./pages/Homepage.jsx";
 import Details from "./components/Details.jsx";
-import Reviews from "./components/Reviews.jsx";
 import App from "./App.jsx";
 import AdminForm from "./pages/AdminForm.jsx";
 import Logout from "./pages/Logout.jsx";
 import ProtectedRoute from "./Auth/ProtectedRoute.jsx";
 import Orders from "./components/Orders.jsx";
 import Contact from "./components/Contact.jsx";
-import GoogleReviews from "./components/GoogleReviews.jsx";
+import Rating from "./components/Rating.jsx";
+import CakeReviews from "./components/CakeReviews.jsx";
 const appRouter = createBrowserRouter([
   {
     path: "/",
@@ -89,14 +89,7 @@ const appRouter = createBrowserRouter([
           </Suspense>
         ),
       },
-      {
-        path: "/googleReview",
-        element: (
-          <Suspense fallback={<div>Loading...</div>}>
-            <GoogleReviews />
-          </Suspense>
-        ),
-      },
+     
       {
         path: "/orders",
         element: (
@@ -117,7 +110,15 @@ const appRouter = createBrowserRouter([
         path: "/review",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
-            <Reviews />
+            <Rating />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/cakeReviews/:id",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <CakeReviews />
           </Suspense>
         ),
       },

@@ -1,135 +1,117 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const Reviews = () => {
-  const [reviewsData, setReviewsData] = useState([]);
-  const [ratingDistribution, setRatingDistribution] = useState([]);
-  const [reviewText, setReviewText] = useState("");
-  const [rating, setRating] = useState(5); // Default to 5 stars
-  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [reviews, setReviews] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Fetch reviews data and rating distribution from backend
+    // Fetch reviews data from the backend
     const fetchReviews = async () => {
       try {
-        const reviewsResponse = await axios.get("/api/reviews");
-        const distributionResponse = await axios.get("/api/reviews/rating-distribution");
-
-        setReviewsData(reviewsResponse.data);
-        setRatingDistribution(distributionResponse.data);
-      } catch (error) {
-        console.error("Error fetching reviews data:", error);
-        setFeedbackMessage("Failed to load reviews. Please try again later.");
+        const response = await axios.get(
+          "https://cake-shop-backend-1.onrender.com/reviews"
+        );
+        setReviews(response.data.data);
+      } catch (err) {
+        console.error(err);
+        setError(err.response?.data?.error || "Failed to fetch reviews");
       }
     };
 
     fetchReviews();
   }, []);
 
-  const handleReviewChange = (e) => {
-    setReviewText(e.target.value);
-  };
+  const maxRating = 5; // Maximum possible rating value
 
-  const handleRatingChange = (newRating) => {
-    setRating(newRating);
-  };
+  // Calculate total reviews and the distribution of each rating (1 to 5)
+  const totalReviews = reviews.length;
+  const ratingCounts = Array(maxRating).fill(0); // [0, 0, 0, 0, 0]
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!reviewText) {
-      setFeedbackMessage("Please write a review before submitting.");
-      return;
-    }
-
-    try {
-      const response = await axios.post("/api/reviews", {
-        name: "Anonymous", // Change as needed
-        rating,
-        comment: reviewText,
-      });
-
-      // Clear the textarea and reset feedback
-      setReviewText("");
-      setFeedbackMessage("Thank you for your review!");
-
-      // Optionally, you can fetch the updated reviews after submitting
-      // fetchReviews();
-    } catch (error) {
-      setFeedbackMessage("Failed to submit review. Please try again.");
-    }
-  };
+  reviews.forEach((review) => {
+    ratingCounts[review.rating - 1] += 1; // Increment the corresponding rating count
+  });
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-10">
-        <div>
+    <div className="max-w-[95%] mx-auto rounded-xl shadow-2xl p-6 bg-white  mt-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+        <div className=" flex items-center justify-center">
+          <img
+            src="https://ik.imagekit.io/a2gpaui9b/cake%20shop/Screenshot%202024-10-06%20162128.png?updatedAt=1728212092683"
+            alt="Proud to serve"
+            className="w-[65%] h-[85%] md:w-[65%] md:h-[80%]  lg:w-[65%] lg:h-[80%] object-cover rounded-lg"
+          />
+        </div>
+        <div className="flex flex-col items-center justify-center w-full ">
           <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
-          <h4 className="text-lg mb-6">Based on {reviewsData.length} reviews</h4>
+          <h4 className="text-lg mb-6">Based on {totalReviews} reviews</h4>
 
-          <div className="grid grid-rows-5 gap-4 mb-6">
-            {ratingDistribution.map((item) => (
-              <div key={item.stars} className="flex items-center">
-                <span className="text-yellow-500">
-                  {"⭐".repeat(item.stars)}
-                </span>
-                <div className="w-full bg-gray-300 rounded-full h-2 mx-2">
-                  <div
-                    className="bg-yellow-500 h-2 rounded-full"
-                    style={{ width: `${item.percentage}%` }}
-                  />
-                </div>
-                <span className="text-gray-600">{item.percentage}%</span>
-              </div>
-            ))}
-          </div>
-          <div>
-            <p className="text-2xl font-bold mb-4">Share your thoughts</p>
-            {feedbackMessage && <p className="text-red-500 mb-2">{feedbackMessage}</p>}
-          </div>
-          <form onSubmit={handleSubmit} className="mt-6">
-            <textarea
-              className="w-full p-2 border rounded-lg shadow-sm"
-              placeholder="Write a review..."
-              rows="4"
-              value={reviewText}
-              onChange={handleReviewChange}
-            />
-            <div className="my-4">
-              <span className="text-lg font-semibold">Rating:</span>
-              <div className="flex mt-2">
-                {[5, 4, 3, 2, 1].map((star) => (
-                  <span
-                    key={star}
-                    className={`cursor-pointer text-yellow-500 ${
-                      star <= rating ? "text-yellow-500" : "text-gray-300"
-                    }`}
-                    onClick={() => handleRatingChange(star)}
-                  >
-                    ⭐
+          {/* Display error message if any */}
+          {error && <div className="text-red-500">{error}</div>}
+
+          <div className="grid grid-rows-5 gap-4 mb-10 w-[90%] mx-auto">
+            {ratingCounts.map((count, index) => {
+              const rating = index + 1; // 1-based rating (1, 2, 3, 4, 5)
+              const percentage = totalReviews
+                ? (count / totalReviews) * 100
+                : 0; // Calculate percentage for each rating
+
+              return (
+                <div
+                  key={rating}
+                  className="flex items-center w-[90%] mx-auto "
+                >
+                  <span className="text-yellow-500">{"⭐".repeat(rating)}</span>
+                  <div className="w-full bg-gray-300 rounded-full h-2 mx-2 flex">
+                    <div
+                      className="bg-yellow-500 h-2 rounded-full"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span className="text-gray-600  flex">
+                    <p>{percentage.toFixed(0)}%</p>
+                    <p> ({count})</p>
+                    <p>reviews</p>
                   </span>
-                ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <div className="overflow-hidden">
+        <div className="flex flex-col md:flex-row gap-4  max-h-[80vh] overflow-y-auto md:overflow-x-auto px-4 scrollbar-hide">
+          {reviews.map((review) => (
+            <div
+              key={review.id}
+              className="p-4 border rounded-xl shadow-xl min-w-full md:min-w-[25%] "
+            >
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <div className="flex flex-col items-start">
+                    <h5 className="text-xl font-semibold">
+                      {review.auth.name}
+                    </h5>
+                    <span className="text-yellow-500">
+                      {Array(review.rating).fill("⭐").join("")}
+                    </span>
+                  </div>
+                  <p className="text-gray-700">{review.comment}</p>
+                </div>
+                <div>
+                  {review.cardItem.image ? (
+                    <img
+                      src={review.cardItem.image}
+                      alt={`Image for ${review.cardItem.title}`}
+                      className="w-32 h-32 rounded"
+                    />
+                  ) : (
+                    <p>No image available</p>
+                  )}
+                </div>
               </div>
             </div>
-            <button type="submit" className="mt-2 px-4 py-2 bg-[#FFD0D0] text-black rounded-lg hover:bg-[#DE8816]">
-              Submit
-            </button>
-          </form>
-        </div>
-        <div>
-          <div className="space-y-4">
-            {reviewsData.map((review) => (
-              <div key={review.id} className="p-4 border rounded-lg shadow-sm">
-                <div className="flex flex-col items-start mb-2">
-                  <h5 className="text-xl font-semibold">{review.name}</h5>
-                  <span className="text-yellow-500 ml-2">
-                    {Array(review.rating).fill("⭐")}
-                  </span>
-                </div>
-                <p className="text-gray-700">{review.comment}</p>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </div>

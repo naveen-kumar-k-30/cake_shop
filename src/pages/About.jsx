@@ -1,12 +1,10 @@
 import Label from "../components/Label"
-import MapLocation from "../components/Maplocation"
 
 const About = () => {
   return (
     <>
-    <div className="flex flex-col gap-4 mt-4">
+    <div className="flex flex-col gap-4  max-w-[70%] mx-auto rounded-xl shadow-2xl p-6 bg-white  mt-10">
     <Label/>
-    <MapLocation/>
     </div>
     </>
   )
